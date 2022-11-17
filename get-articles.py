@@ -1,26 +1,24 @@
 import cloudscraper
 from bs4 import BeautifulSoup
+import pandas as pd
 
-menu = '# Journal options:\n\
-# 0. Quit\n\
-# 1. New York Times\n\
-# 2. The Economist\n\
-# 3. New Yorker'
+df=pd.read_csv('jrnl_class_lst.csv')
+df_sorted=df.sort_values(by='Journal').reset_index(drop=True)
+df_sorted.index += 1
 
+menu=df_sorted['Journal'].to_string()
+menu = "0    Quit\n" + menu
 print(menu)
 
 repeat = True
 while repeat:
   repeat = False
-  jrnl_optn = int(input("Enter journal option: "))
-  if jrnl_optn == 1:
-    attributes = {'class':'css-at9mc1 evys1bk0'}
-  elif jrnl_optn == 2:
-    attributes = {'class':'article__body-text'}
-  elif jrnl_optn == 3:
-    attributes = {'class':'paywall'}
-  elif jrnl_optn ==0:
+  jrnl_optn = int(input("Enter journal option: ")) -1
+  if jrnl_optn == -1:
     quit()
+  elif jrnl_optn >=0 and jrnl_optn <= df_sorted.shape[0] - 1:
+    print(df_sorted.iloc[jrnl_optn,1])
+    attributes = {'class':df_sorted.iloc[jrnl_optn,1]}
   else:
     print("Invalid selection")
     repeat = True
@@ -44,7 +42,3 @@ with open(fpath, 'w') as f:
   for line in para:
     f.write(line.text)
     f.write("\n")
-
-
-#url = 'https://www.nytimes.com/2022/10/26/opinion/grief-death-lessons-on-living.html'
-#url = 'https://www.economist.com/graphic-detail/2022/11/14/a-rare-reason-for-optimism-about-climate-change'
